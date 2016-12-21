@@ -1,0 +1,475 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>teamscale_client.client &#8212; Python Teamscale Client 0.1 alpha documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1 alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Python Teamscale Client 0.1 alpha documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for teamscale_client.client</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">unicode_literals</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">requests.auth</span> <span class="k">import</span> <span class="n">HTTPBasicAuth</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">simplejson</span> <span class="k">as</span> <span class="nn">json</span>
+
+<span class="kn">from</span> <span class="nn">teamscale_client.data</span> <span class="k">import</span> <span class="n">ServiceError</span><span class="p">,</span> <span class="n">Baseline</span>
+<span class="kn">from</span> <span class="nn">teamscale_client.utils</span> <span class="k">import</span> <span class="n">to_json</span>
+
+<div class="viewcode-block" id="TeamscaleClient"><a class="viewcode-back" href="../../teamscale_client.html#teamscale_client.client.TeamscaleClient">[docs]</a><span class="k">class</span> <span class="nc">TeamscaleClient</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Basic Python service client to access Teamscale&#39;s REST Api.</span>
+
+<span class="sd">    Request handling done with:</span>
+<span class="sd">    http://docs.python-requests.org/en/latest/</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        url (str): The url to Teamscale (including the port)</span>
+<span class="sd">        username (str): The username to use for authentication</span>
+<span class="sd">        password (str): The password/api key to use for authentication</span>
+<span class="sd">        project (str): The project on which to work</span>
+<span class="sd">        sslverify: See requests&#39; verify parameter in http://docs.python-requests.org/en/latest/user/advanced/#ssl-cert-verification</span>
+<span class="sd">        timeout (float): TTFB timeout in seconds, see http://docs.python-requests.org/en/master/user/quickstart/#timeouts</span>
+<span class="sd">        branch: The branch name for which to upload/retrieve data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">sslverify</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">branch</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">username</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">auth_header</span> <span class="o">=</span> <span class="n">HTTPBasicAuth</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sslverify</span> <span class="o">=</span> <span class="n">sslverify</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">branch</span> <span class="o">=</span> <span class="n">branch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_api_version</span><span class="p">()</span>
+
+<div class="viewcode-block" id="TeamscaleClient.check_api_version"><a class="viewcode-back" href="../../teamscale_client.html#teamscale_client.client.TeamscaleClient.check_api_version">[docs]</a>    <span class="k">def</span> <span class="nf">check_api_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Verifies the server&#39;s api version and connectivity.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ServiceError: If the version does not match or the server cannot be found.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_global_service_url</span><span class="p">(</span><span class="s1">&#39;service-api-info&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">apiVersion</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;apiVersion&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">apiVersion</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ServiceError</span><span class="p">(</span><span class="s2">&quot;Server api version &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">apiVersion</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; too low and not compatible. This client requires Teamscale 3.0 or newer.&quot;</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="TeamscaleClient.get"><a class="viewcode-back" href="../../teamscale_client.html#teamscale_client.client.TeamscaleClient.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sends a GET request to the given service url.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            url (str):  The URL for which to execute a PUT request</span>
+<span class="sd">            parameters (dict): parameters to attach to the url</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            requests.Response: request&#39;s response</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ServiceError: If anything goes wrong</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Accept&#39;</span> <span class="p">:</span> <span class="s1">&#39;application/json&#39;</span><span class="p">}</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_header</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sslverify</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ServiceError</span><span class="p">(</span><span class="s2">&quot;ERROR: GET </span><span class="si">{url}</span><span class="s2">: </span><span class="si">{r.status_code}</span><span class="s2">:</span><span class="si">{r.text}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">response</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="TeamscaleClient.put"><a class="viewcode-back" href="../../teamscale_client.html#teamscale_client.client.TeamscaleClient.put">[docs]</a>    <span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sends a PUT request to the given service url with the json payload as content.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            url (str):  The URL for which to execute a PUT request</span>
+<span class="sd">            json: The Object to attach as content, will be serialized to json (only for object that can be serialized by default)</span>
+<span class="sd">            parameters (dict): parameters to attach to the url</span>
+<span class="sd">            data: The data object to be attached to the request</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            requests.Response: request&#39;s response</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ServiceError: If anything goes wrong</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">json</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">:</span> <span class="s1">&#39;application/json&#39;</span><span class="p">},</span> <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_header</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sslverify</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ServiceError</span><span class="p">(</span><span class="s2">&quot;ERROR: PUT </span><span class="si">{url}</span><span class="s2">: </span><span class="si">{r.status_code}</span><span class="s2">:</span><span class="si">{r.text}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">response</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="TeamscaleClient.delete"><a class="viewcode-back" href="../../teamscale_client.html#teamscale_client.client.TeamscaleClient.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sends a DELETE request to the given service url.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            url (str):  The URL for which to execute a DELETE request</span>
+<span class="sd">            parameters (dict): parameters to attach to the url</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            requests.Response: request&#39;s response</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ServiceError: If anything goes wrong</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_header</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sslverify</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ServiceError</span><span class="p">(</span><span class="s2">&quot;ERROR: PUT </span><span class="si">{url}</span><span class="s2">: </span><span class="si">{r.status_code}</span><span class="s2">:</span><span class="si">{r.text}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">response</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="TeamscaleClient.add_findings_group"><a class="viewcode-back" href="../../teamscale_client.html#teamscale_client.client.TeamscaleClient.add_findings_group">[docs]</a>    <span class="k">def</span> <span class="nf">add_findings_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">mapping_pattern</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds group of findings.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): Name of group.</span>
+<span class="sd">            mapping_pattern (str): Regular expression to match a finding&#39;s ``typeid`` in order to belong to this group.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            requests.Response: request&#39;s response</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_global_service_url</span><span class="p">(</span><span class="s1">&#39;add-external-findings-group&#39;</span><span class="p">)</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;groupName&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s1">&#39;mapping&#39;</span><span class="p">:</span> <span class="n">mapping_pattern</span><span class="p">}]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TeamscaleClient.add_finding_descriptions"><a class="viewcode-back" href="../../teamscale_client.html#teamscale_client.client.TeamscaleClient.add_finding_descriptions">[docs]</a>    <span class="k">def</span> <span class="nf">add_finding_descriptions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">descriptions</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds descriptions of findings.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            descriptions (list): List of :class:`FindingDescription` to add to Teamscale.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            requests.Response: request&#39;s response</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_global_service_url</span><span class="p">(</span><span class="s1">&#39;add-external-finding-descriptions&#39;</span><span class="p">)</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;typeId&#39;</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">typeid</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="s1">&#39;enablement&#39;</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">enablement</span><span class="p">}</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">descriptions</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TeamscaleClient.update_findings_schema"><a class="viewcode-back" href="../../teamscale_client.html#teamscale_client.client.TeamscaleClient.update_findings_schema">[docs]</a>    <span class="k">def</span> <span class="nf">update_findings_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Triggers refresh of finding groups in analysis profiles.&quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_global_service_url</span><span class="p">(</span><span class="s1">&#39;update-findings-schema&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;projects&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">})</span></div>
+
+<div class="viewcode-block" id="TeamscaleClient.upload_findings"><a class="viewcode-back" href="../../teamscale_client.html#teamscale_client.client.TeamscaleClient.upload_findings">[docs]</a>    <span class="k">def</span> <span class="nf">upload_findings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">findings</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">partition</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Uploads a list of findings</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            findings (List[:class:`data.FileFindings`]): the findings data </span>
+<span class="sd">            timestamp (datetime.datetime): timestamp for which to upload the findings</span>
+<span class="sd">            message (str): The message to use for the generated upload commit</span>
+<span class="sd">            partition (str): The partition&#39;s id into which the findings should be added (See also: :ref:`FAQ - Partitions&lt;faq-partition&gt;`).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            requests.Response: object generated by the request</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ServiceError: If anything goes wrong</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upload_external_data</span><span class="p">(</span><span class="s2">&quot;add-external-findings&quot;</span><span class="p">,</span> <span class="n">findings</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">partition</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TeamscaleClient.upload_metrics"><a class="viewcode-back" href="../../teamscale_client.html#teamscale_client.client.TeamscaleClient.upload_metrics">[docs]</a>    <span class="k">def</span> <span class="nf">upload_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">partition</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Uploads a list of metrics</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            metrics (List[:class:`data.MetricEntry`]): metrics data</span>
+<span class="sd">            timestamp (datetime.datetime): timestamp for which to upload the metrics</span>
+<span class="sd">            message (str): The message to use for the generated upload commit</span>
+<span class="sd">            partition (str): The partition&#39;s id into which the metrics should be added (See also: :ref:`FAQ - Partitions&lt;faq-partition&gt;`).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            requests.Response: object generated by the upload request</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ServiceError: If anything goes wrong</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upload_external_data</span><span class="p">(</span><span class="s2">&quot;add-external-metrics&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">partition</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_upload_external_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_name</span><span class="p">,</span> <span class="n">json_data</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">partition</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Uploads externals data in json format</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            service_name (str): The service name to which to upload the data</span>
+<span class="sd">            json_data: data in json format</span>
+<span class="sd">            timestamp (datetime.datetime): timestamp (unix format) for which to upload the data</span>
+<span class="sd">            message (str): The message to use for the generated upload commit</span>
+<span class="sd">            partition (str): The partition&#39;s id into which the data should be added (See also: :ref:`FAQ - Partitions&lt;faq-partition&gt;`).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            requests.Response: object generated by the request</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ServiceError: If anything goes wrong</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">service_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_project_service_url</span><span class="p">(</span><span class="n">service_name</span><span class="p">)</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_timestamp_parameter</span><span class="p">(</span><span class="n">timestamp</span><span class="p">),</span>
+            <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span>
+            <span class="s2">&quot;partition&quot;</span><span class="p">:</span> <span class="n">partition</span><span class="p">,</span>
+            <span class="s2">&quot;skip-session&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;adjusttimestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">service_url</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">to_json</span><span class="p">(</span><span class="n">json_data</span><span class="p">))</span>
+
+<div class="viewcode-block" id="TeamscaleClient.add_metric_descriptions"><a class="viewcode-back" href="../../teamscale_client.html#teamscale_client.client.TeamscaleClient.add_metric_descriptions">[docs]</a>    <span class="k">def</span> <span class="nf">add_metric_descriptions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metric_descriptions</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Uploads metric definitions to Teamscale.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            metric_descriptions (list[:class:`MetricDescription`]): List of metric descriptions to add to Teamscale.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            requests.Response: object generated by the request</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ServiceError: If anything goes wrong</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">service_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_global_service_url</span><span class="p">(</span><span class="s2">&quot;add-external-metric-description&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">service_url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">to_json</span><span class="p">(</span><span class="n">metric_descriptions</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TeamscaleClient.upload_coverage_data"><a class="viewcode-back" href="../../teamscale_client.html#teamscale_client.client.TeamscaleClient.upload_coverage_data">[docs]</a>    <span class="k">def</span> <span class="nf">upload_coverage_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coverage_files</span><span class="p">,</span> <span class="n">coverage_format</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">partition</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Upload coverage reports to Teamscale. It is expected that the given coverage report files can be read from the filesystem.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            coverage_files (list): list of coverage filenames (strings!) that should be uploaded. Files must be readable.</span>
+<span class="sd">            coverage_format  (constants.CoverageFormats): the format to use</span>
+<span class="sd">            timestamp (datetime.datetime): timestamp (unix format) for which to upload the data</span>
+<span class="sd">            message (str): The message to use for the generated upload commit</span>
+<span class="sd">            partition (str): The partition&#39;s id into which the data should be added (See also: :ref:`FAQ - Partitions&lt;faq-partition&gt;`).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            requests.Response: object generated by the request</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ServiceError: If anything goes wrong</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">service_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_project_service_url</span><span class="p">(</span><span class="s2">&quot;external-report&quot;</span><span class="p">)</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_timestamp_parameter</span><span class="p">(</span><span class="n">timestamp</span><span class="p">),</span>
+            <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span>
+            <span class="s2">&quot;partition&quot;</span><span class="p">:</span> <span class="n">partition</span><span class="p">,</span>
+            <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="n">coverage_format</span><span class="p">,</span>
+            <span class="s2">&quot;adjusttimestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span>
+        <span class="p">}</span>
+        <span class="n">multiple_files</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;report&#39;</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">coverage_files</span><span class="p">]</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">service_url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_header</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sslverify</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">multiple_files</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ServiceError</span><span class="p">(</span><span class="s2">&quot;ERROR: GET </span><span class="si">{url}</span><span class="s2">: </span><span class="si">{r.status_code}</span><span class="s2">:</span><span class="si">{r.text}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">service_url</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">response</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="TeamscaleClient.upload_architectures"><a class="viewcode-back" href="../../teamscale_client.html#teamscale_client.client.TeamscaleClient.upload_architectures">[docs]</a>    <span class="k">def</span> <span class="nf">upload_architectures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">architectures</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Upload architectures to Teamscale. It is expected that the given architectures can be be read from the filesystem.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            architectures (dict): mappping of teamscale paths to architecture files that should be uploaded. Files must be readable.</span>
+<span class="sd">            timestamp (datetime.datetime): timestamp for which to upload the data</span>
+<span class="sd">            message (str): The message to use for the generated upload commit</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            requests.Response: object generated by the request</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ServiceError: If anything goes wrong</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">service_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_project_service_url</span><span class="p">(</span><span class="s2">&quot;architecture-upload&quot;</span><span class="p">)</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_timestamp_parameter</span><span class="p">(</span><span class="n">timestamp</span><span class="p">),</span>
+            <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">message</span>
+        <span class="p">}</span>
+        <span class="n">architecture_files</span> <span class="o">=</span> <span class="p">[(</span><span class="n">path</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">architectures</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">service_url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_header</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sslverify</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">architecture_files</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ServiceError</span><span class="p">(</span><span class="s2">&quot;ERROR: GET </span><span class="si">{url}</span><span class="s2">: </span><span class="si">{r.status_code}</span><span class="s2">:</span><span class="si">{r.text}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">service_url</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">response</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="TeamscaleClient.upload_non_code_metrics"><a class="viewcode-back" href="../../teamscale_client.html#teamscale_client.client.TeamscaleClient.upload_non_code_metrics">[docs]</a>    <span class="k">def</span> <span class="nf">upload_non_code_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">partition</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Uploads a list of non-code metrics</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            metrics (List[:class:`data.NonCodeMetricEntry`]): metrics data</span>
+<span class="sd">            timestamp (datetime.datetime): timestamp for which to upload the metrics</span>
+<span class="sd">            message (str): The message to use for the generated upload commit</span>
+<span class="sd">            partition (str): The partition&#39;s id into which the metrics should be added (See also: :ref:`FAQ - Partitions&lt;faq-partition&gt;`).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            requests.Response: object generated by the upload request</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ServiceError: If anything goes wrong</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upload_external_data</span><span class="p">(</span><span class="s2">&quot;add-non-code-metrics&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">partition</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TeamscaleClient.get_baselines"><a class="viewcode-back" href="../../teamscale_client.html#teamscale_client.client.TeamscaleClient.get_baselines">[docs]</a>    <span class="k">def</span> <span class="nf">get_baselines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieves a list of baselines from the server for the currently active project.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[:class:`data.Basenline`]): The list of baselines.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ServiceError: If anything goes wrong</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">service_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_project_service_url</span><span class="p">(</span><span class="s2">&quot;baselines&quot;</span><span class="p">)</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="kc">True</span>
+        <span class="p">}</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Accept&#39;</span> <span class="p">:</span> <span class="s1">&#39;application/json&#39;</span><span class="p">}</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">service_url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_header</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sslverify</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ServiceError</span><span class="p">(</span><span class="s2">&quot;ERROR: GET </span><span class="si">{url}</span><span class="s2">: </span><span class="si">{r.status_code}</span><span class="s2">:</span><span class="si">{r.text}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">service_url</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">response</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">[</span> <span class="n">Baseline</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">],</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="p">]</span></div>
+
+<div class="viewcode-block" id="TeamscaleClient.delete_baseline"><a class="viewcode-back" href="../../teamscale_client.html#teamscale_client.client.TeamscaleClient.delete_baseline">[docs]</a>    <span class="k">def</span> <span class="nf">delete_baseline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">baseline_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Deletes a baseline from the currently active project.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            baseline_name (string): The baseline that is to be removed.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            requests.Response: object generated by the upload request</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ServiceError: If anything goes wrong</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">service_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_project_service_url</span><span class="p">(</span><span class="s2">&quot;baselines&quot;</span><span class="p">)</span>
+        <span class="n">service_url</span> <span class="o">+=</span> <span class="n">baseline_name</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">service_url</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{})</span></div>
+
+<div class="viewcode-block" id="TeamscaleClient.add_baseline"><a class="viewcode-back" href="../../teamscale_client.html#teamscale_client.client.TeamscaleClient.add_baseline">[docs]</a>    <span class="k">def</span> <span class="nf">add_baseline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">baseline</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds a baseline to the currently active project. Re-adding an existing baseline will update the original baseline.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            baseline (data.Baseline): The baseline that is to be added (or updated)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            requests.Response: object generated by the upload request</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ServiceError: If anything goes wrong</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">service_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_project_service_url</span><span class="p">(</span><span class="s2">&quot;baselines&quot;</span><span class="p">)</span>
+        <span class="n">service_url</span> <span class="o">+=</span> <span class="n">baseline</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">service_url</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{},</span> <span class="n">data</span><span class="o">=</span><span class="n">to_json</span><span class="p">(</span><span class="n">baseline</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_timestamp_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the timestamp parameter. Will use the branch parameter if it is set.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            timestamp (datetime.datetime): The timestamp to convert</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: timestamp in ms</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">timestamp_seconds</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">mktime</span><span class="p">(</span><span class="n">timestamp</span><span class="o">.</span><span class="n">timetuple</span><span class="p">())</span>
+        <span class="n">timestamp_ms</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">timestamp_seconds</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">branch</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">branch</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="n">timestamp_ms</span>
+        <span class="k">return</span> <span class="n">timestamp_ms</span>
+
+<div class="viewcode-block" id="TeamscaleClient.get_global_service_url"><a class="viewcode-back" href="../../teamscale_client.html#teamscale_client.client.TeamscaleClient.get_global_service_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_global_service_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the full url pointing to a global service.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">           service_name(str): the name of the service for which the url should be generated</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The full url</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">/&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">service_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TeamscaleClient.get_project_service_url"><a class="viewcode-back" href="../../teamscale_client.html#teamscale_client.client.TeamscaleClient.get_project_service_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_project_service_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the full url pointing to a project service.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">           service_name(str): the name of the service for which the url should be generated</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The full url</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{client.url}</span><span class="s2">/p/</span><span class="si">{client.project}</span><span class="s2">/</span><span class="si">{service}</span><span class="s2">/&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">service</span><span class="o">=</span><span class="n">service_name</span><span class="p">)</span></div>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="TeamscaleClient.read_json_from_file"><a class="viewcode-back" href="../../teamscale_client.html#teamscale_client.client.TeamscaleClient.read_json_from_file">[docs]</a>    <span class="k">def</span> <span class="nf">read_json_from_file</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reads JSON content from a file and parses it to ensure basic integrity.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            file_path (str): File from which to read the JSON content.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The parsed JSON data.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+            <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">json_data</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Python Teamscale Client 0.1 alpha documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, CQSE GmbH.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>

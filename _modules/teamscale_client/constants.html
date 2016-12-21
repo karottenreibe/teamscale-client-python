@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>teamscale_client.constants &#8212; Python Teamscale Client 0.1 alpha documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1 alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Python Teamscale Client 0.1 alpha documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for teamscale_client.constants</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This module contains multiple constants collections typically used when</span>
+<span class="sd">communicating metrics and findings with Teamscale.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">unicode_literals</span>
+
+<div class="viewcode-block" id="Assessment"><a class="viewcode-back" href="../../constants.html#teamscale_client.constants.Assessment">[docs]</a><span class="k">class</span> <span class="nc">Assessment</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Constants to be used as assessment levels.&quot;&quot;&quot;</span>
+
+    <span class="n">RED</span> <span class="o">=</span> <span class="s2">&quot;RED&quot;</span>
+
+    <span class="n">YELLOW</span> <span class="o">=</span> <span class="s2">&quot;YELLOW&quot;</span></div>
+
+<div class="viewcode-block" id="AssessmentMetricColors"><a class="viewcode-back" href="../../constants.html#teamscale_client.constants.AssessmentMetricColors">[docs]</a><span class="k">class</span> <span class="nc">AssessmentMetricColors</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Constants used for colors in assessment metrics. &quot;&quot;&quot;</span>
+
+    <span class="n">RED</span> <span class="o">=</span> <span class="s2">&quot;RED&quot;</span>
+
+    <span class="n">YELLOW</span> <span class="o">=</span> <span class="s2">&quot;YELLOW&quot;</span>
+
+    <span class="n">GREEN</span> <span class="o">=</span> <span class="s2">&quot;GREEN&quot;</span></div>
+
+<div class="viewcode-block" id="Enablement"><a class="viewcode-back" href="../../constants.html#teamscale_client.constants.Enablement">[docs]</a><span class="k">class</span> <span class="nc">Enablement</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;The enablement describes which rating a finding should receive.&quot;&quot;&quot;</span>
+
+    <span class="n">RED</span> <span class="o">=</span> <span class="s2">&quot;RED&quot;</span>
+    <span class="sd">&quot;&quot;&quot;The finding should always be rated red.&quot;&quot;&quot;</span>
+
+    <span class="n">YELLOW</span> <span class="o">=</span> <span class="s2">&quot;YELLOW&quot;</span>
+    <span class="sd">&quot;&quot;&quot;The finding should always be rated yellow.&quot;&quot;&quot;</span>
+
+    <span class="n">AUTO</span> <span class="o">=</span> <span class="s2">&quot;AUTO&quot;</span>
+    <span class="sd">&quot;&quot;&quot;The assessment provided by the concrete finding is used.&quot;&quot;&quot;</span>
+
+    <span class="n">OFF</span> <span class="o">=</span> <span class="s2">&quot;OFF&quot;</span>
+    <span class="sd">&quot;&quot;&quot;The finding is disabled by default.&quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="MetricAggregation"><a class="viewcode-back" href="../../constants.html#teamscale_client.constants.MetricAggregation">[docs]</a><span class="k">class</span> <span class="nc">MetricAggregation</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Class that contains valid aggregation strategies.&quot;&quot;&quot;</span>
+
+    <span class="n">SUM</span> <span class="o">=</span> <span class="s2">&quot;SUM&quot;</span>
+
+    <span class="n">MAX</span> <span class="o">=</span> <span class="s2">&quot;MAX&quot;</span>
+
+    <span class="n">MIN</span> <span class="o">=</span> <span class="s2">&quot;MIN&quot;</span></div>
+
+<div class="viewcode-block" id="MetricValueType"><a class="viewcode-back" href="../../constants.html#teamscale_client.constants.MetricValueType">[docs]</a><span class="k">class</span> <span class="nc">MetricValueType</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Metric value types.&quot;&quot;&quot;</span>
+
+    <span class="n">NUMERIC</span> <span class="o">=</span> <span class="s2">&quot;NUMERIC&quot;</span>
+
+    <span class="n">TIMESTAMP</span> <span class="o">=</span> <span class="s2">&quot;TIMESTAMP&quot;</span>
+
+    <span class="n">ASSESSMENT</span> <span class="o">=</span> <span class="s2">&quot;ASSESSMENT&quot;</span></div>
+
+<div class="viewcode-block" id="MetricProperties"><a class="viewcode-back" href="../../constants.html#teamscale_client.constants.MetricProperties">[docs]</a><span class="k">class</span> <span class="nc">MetricProperties</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Possible properties used in metric definitions.&quot;&quot;&quot;</span>
+
+    <span class="n">SIZE_METRIC</span> <span class="o">=</span> <span class="s2">&quot;SIZE_METRIC&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Normal number counting metric.&quot;&quot;&quot;</span>
+
+    <span class="n">RATIO_METRIC</span> <span class="o">=</span> <span class="s2">&quot;RATIO_METRIC&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Metric is a percentage value between 0 and 1.&quot;&quot;&quot;</span>
+
+    <span class="n">QUALITY_NEUTRAL</span> <span class="o">=</span> <span class="s2">&quot;QUALITY_NEUTRAL&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Quality neutral metrics can not be assessed/rated (e.g. number of files)&quot;&quot;&quot;</span>
+
+    <span class="n">LOW_IS_BAD</span> <span class="o">=</span> <span class="s2">&quot;LOW_IS_BAD&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Normally high values are considered bad, use this to inverse.&quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="CoverageFormats"><a class="viewcode-back" href="../../constants.html#teamscale_client.constants.CoverageFormats">[docs]</a><span class="k">class</span> <span class="nc">CoverageFormats</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Possible coverage formats that Teamscale can interpret.&quot;&quot;&quot;</span>
+
+    <span class="n">CTC</span> <span class="o">=</span> <span class="s2">&quot;CTC&quot;</span>
+
+    <span class="n">COBERTURA</span> <span class="o">=</span> <span class="s2">&quot;COBERTURA&quot;</span>
+
+    <span class="n">GCOV</span> <span class="o">=</span> <span class="s2">&quot;GCOV&quot;</span>
+
+    <span class="n">LCOV</span> <span class="o">=</span> <span class="s2">&quot;LCOV&quot;</span>
+
+    <span class="n">XR_BABOON</span> <span class="o">=</span> <span class="s2">&quot;XR_BABOON&quot;</span>
+
+    <span class="n">JACOCO</span> <span class="o">=</span> <span class="s2">&quot;JACOCO&quot;</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Python Teamscale Client 0.1 alpha documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, CQSE GmbH.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>

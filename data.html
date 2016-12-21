@@ -1,0 +1,293 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Data Classes &#8212; Python Teamscale Client 0.1 alpha documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1 alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Utils" href="utils.html" />
+    <link rel="prev" title="Useful Constants" href="constants.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="utils.html" title="Utils"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="constants.html" title="Useful Constants"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Python Teamscale Client 0.1 alpha documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-teamscale_client.data">
+<span id="data-classes"></span><h1>Data Classes<a class="headerlink" href="#module-teamscale_client.data" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="teamscale_client.data.Baseline">
+<em class="property">class </em><code class="descclassname">teamscale_client.data.</code><code class="descname">Baseline</code><span class="sig-paren">(</span><em>name</em>, <em>description</em>, <em>date=None</em>, <em>timestamp=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teamscale_client/data.html#Baseline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#teamscale_client.data.Baseline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a Teamscale baseline. Either the date or the timestamp must be given</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<em>str</em>) &#8211; The baseline&#8217;s name</li>
+<li><strong>description</strong> (<em>str</em>) &#8211; The baseline&#8217;s description</li>
+<li><strong>date</strong> (<em>Optional</em><em>[</em><em>long</em><em>]</em><em></em>) &#8211; The date for which the baseline is set</li>
+<li><strong>date</strong> &#8211; The timestamp (in ms) for which the baseline is set</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="teamscale_client.data.Baseline.date">
+<code class="descname">date</code><a class="headerlink" href="#teamscale_client.data.Baseline.date" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="teamscale_client.data.FileFindings">
+<em class="property">class </em><code class="descclassname">teamscale_client.data.</code><code class="descname">FileFindings</code><span class="sig-paren">(</span><em>findings</em>, <em>path</em>, <em>content=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teamscale_client/data.html#FileFindings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#teamscale_client.data.FileFindings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Representation of a file and its findings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>findings</strong> (List[<a class="reference internal" href="#teamscale_client.data.Finding" title="teamscale_client.data.Finding"><code class="xref py py-class docutils literal"><span class="pre">Finding</span></code></a>]) &#8211; A list containing all findings that are present in this file.</li>
+<li><strong>path</strong> (<em>str</em>) &#8211; The path to the file in Teamscale.</li>
+<li><strong>content</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em></em>) &#8211; The content of the file (can be left empty).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="teamscale_client.data.Finding">
+<em class="property">class </em><code class="descclassname">teamscale_client.data.</code><code class="descname">Finding</code><span class="sig-paren">(</span><em>finding_type_id</em>, <em>message</em>, <em>assessment=u'YELLOW'</em>, <em>start_offset=None</em>, <em>end_offset=None</em>, <em>start_line=None</em>, <em>end_line=None</em>, <em>identifier=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teamscale_client/data.html#Finding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#teamscale_client.data.Finding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Representation of a finding in Teamscale.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>finding_type_id</strong> (<em>str</em>) &#8211; The type id that this finding belongs to.</li>
+<li><strong>message</strong> (<em>str</em>) &#8211; The main finding message</li>
+<li><strong>assesssment</strong> (<a class="reference internal" href="constants.html#teamscale_client.constants.Assessment" title="teamscale_client.constants.Assessment"><em>constants.Assessment</em></a>) &#8211; The assessment this finding should have. Default is <cite>YELLOW</cite>.
+This value is only important if in Teamscale the finding enablement
+is set to auto, otherwise the setting from Teamscale will be used.</li>
+<li><strong>start_offset</strong> (<em>int</em>) &#8211; Offset from the beginning of the file, where the finding area starts (zero-based, inclusive). Can be left blank, if the start/endline are given. (See also: <a class="reference internal" href="faq.html#faq-offsets"><span class="std std-ref">FAQ - Offsets</span></a>).</li>
+<li><strong>end_offset</strong> (<em>int</em>) &#8211; Offset from the beginning of the file, where the finding area ends (zero-based, inclusive). Can be left blank, if the start/endline are given. (See also: <a class="reference internal" href="faq.html#faq-offsets"><span class="std std-ref">FAQ - Offsets</span></a>).</li>
+<li><strong>start_line</strong> (<em>int</em>) &#8211; The finding&#8217;s first line (one-based, inclusive). Can be left blank, if the offsets are given.</li>
+<li><strong>end_line</strong> (<em>int</em>) &#8211; The finding&#8217;s last line (one-based, inclusive). Can be left blank, if the offsets or start_line are given.</li>
+<li><strong>identifier</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em></em>) &#8211; Advanced usage! Path to special elements in Teamscale, e.g. Simulink model parts. If this is given, offsets and lines do not need to be filled.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="teamscale_client.data.FindingDescription">
+<em class="property">class </em><code class="descclassname">teamscale_client.data.</code><code class="descname">FindingDescription</code><span class="sig-paren">(</span><em>typeid</em>, <em>description</em>, <em>enablement</em><span class="sig-paren">)</span><a class="headerlink" href="#teamscale_client.data.FindingDescription" title="Permalink to this definition">¶</a></dt>
+<dd><p>Description of a finding type to be added at configuration time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>typeid</strong> (<em>str</em>) &#8211; The id used to reference the finding type.</li>
+<li><strong>description</strong> (<em>str</em>) &#8211; The text to display that explains what this finding type is about (and ideally how to fix it). This text will be the same for each concrete instance of the finding.</li>
+<li><strong>enablement</strong> (<a class="reference internal" href="constants.html#teamscale_client.constants.Enablement" title="teamscale_client.constants.Enablement"><em>constants.Enablement</em></a>) &#8211; Describes the default enablement setting for this finding type, used when it is added to the analysis profile.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="teamscale_client.data.FindingDescription.description">
+<code class="descname">description</code><a class="headerlink" href="#teamscale_client.data.FindingDescription.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="teamscale_client.data.FindingDescription.enablement">
+<code class="descname">enablement</code><a class="headerlink" href="#teamscale_client.data.FindingDescription.enablement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="teamscale_client.data.FindingDescription.typeid">
+<code class="descname">typeid</code><a class="headerlink" href="#teamscale_client.data.FindingDescription.typeid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="teamscale_client.data.MetricDescription">
+<em class="property">class </em><code class="descclassname">teamscale_client.data.</code><code class="descname">MetricDescription</code><span class="sig-paren">(</span><em>metric_id</em>, <em>display_name</em>, <em>description</em>, <em>group_id</em>, <em>aggregation=u'SUM'</em>, <em>value_type=u'NUMERIC'</em>, <em>properties=(u'SIZE_METRIC'</em>, <em>)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teamscale_client/data.html#MetricDescription"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#teamscale_client.data.MetricDescription" title="Permalink to this definition">¶</a></dt>
+<dd><p>Description of a metric type to be addded at configuration time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>metric_id</strong> (<em>str</em>) &#8211; The globally unique metric id.</li>
+<li><strong>display_name</strong> (<em>str</em>) &#8211; The metric&#8217;s name that is displayed in the UI.</li>
+<li><strong>description</strong> (<em>str</em>) &#8211; A description explaining what this metric means.</li>
+<li><strong>group_id</strong> (<em>str</em>) &#8211; the name of an analysis group under which the metric is placed (used to group the metrics in the analysis profile).</li>
+<li><strong>aggregation</strong> (<a class="reference internal" href="constants.html#teamscale_client.constants.MetricAggregation" title="teamscale_client.constants.MetricAggregation"><em>constants.MetricAggregation</em></a>) &#8211; How this metric is supposed to be aggregated up the directory hierarchy. Defaults to <code class="docutils literal"><span class="pre">SUM</span></code>.</li>
+<li><strong>value_type</strong> (<a class="reference internal" href="constants.html#teamscale_client.constants.MetricValueType" title="teamscale_client.constants.MetricValueType"><em>constants.MetricValueType</em></a>) &#8211; Determines the metric&#8217;s type. Defaults to <code class="docutils literal"><span class="pre">NUMERIC</span></code>.</li>
+<li><strong>properties</strong> (<em>set</em><em>[</em><a class="reference internal" href="constants.html#teamscale_client.constants.MetricProperties" title="teamscale_client.constants.MetricProperties"><em>constants.MetricProperties</em></a><em>]</em><em></em>) &#8211; Determines the metric&#8217;s properties. This has effects on how/if the metric is displayed and assessed. Defaults to <code class="docutils literal"><span class="pre">(SIZE_METRIC,</span> <span class="pre">)</span></code>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="teamscale_client.data.MetricEntry">
+<em class="property">class </em><code class="descclassname">teamscale_client.data.</code><code class="descname">MetricEntry</code><span class="sig-paren">(</span><em>path</em>, <em>metrics</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teamscale_client/data.html#MetricEntry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#teamscale_client.data.MetricEntry" title="Permalink to this definition">¶</a></dt>
+<dd><p>A container for adding metric values to a file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>path</strong> (<em>str</em>) &#8211; Path to a resource in Teamscale (usually a file).
+This can also point to architecture components using the following syntax: <code class="docutils literal"><span class="pre">-architectures-/&lt;architecture-name&gt;/path/to/component/</span></code></li>
+<li><strong>metrics</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em></em>) &#8211; A dictionary mapping from metric_id to metric value. The value depends on the metric type: Numeric: <code class="docutils literal"><span class="pre">double</span></code>, Timestamp: <code class="docutils literal"><span class="pre">int</span> <span class="pre">-</span> <span class="pre">unix</span> <span class="pre">timestamp</span> <span class="pre">in</span> <span class="pre">milliseconds</span></code>, Assessment: <code class="docutils literal"><span class="pre">[&lt;GREENVALUE&gt;,&lt;YELLOWVALUE&gt;,&lt;REDVALUE&gt;]</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="teamscale_client.data.NonCodeMetricEntry">
+<em class="property">class </em><code class="descclassname">teamscale_client.data.</code><code class="descname">NonCodeMetricEntry</code><span class="sig-paren">(</span><em>path</em>, <em>content=u''</em>, <em>count=1</em>, <em>assessment={}</em>, <em>time=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/teamscale_client/data.html#NonCodeMetricEntry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#teamscale_client.data.NonCodeMetricEntry" title="Permalink to this definition">¶</a></dt>
+<dd><p>A container for adding non-code metrics to a project.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>path</strong> (<em>str</em>) &#8211; Arbitrary path to which the non-code metrics shall be attached.</li>
+<li><strong>content</strong> (<em>str</em>) &#8211; The content displayed as content for the path.</li>
+<li><strong>count</strong> (<em>int</em>) &#8211; The count value.</li>
+<li><strong>assessment</strong> (dict[<code class="xref py py-class docutils literal"><span class="pre">constants.AssessmentMetricColors</span></code>, int]) &#8211; The assessment distribution for this path.</li>
+<li><strong>time</strong> (<em>double</em>) &#8211; The time used to create this result (e.g. unit test run time, or build duration).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="exception">
+<dt id="teamscale_client.data.ServiceError">
+<em class="property">exception </em><code class="descclassname">teamscale_client.data.</code><code class="descname">ServiceError</code><a class="reference internal" href="_modules/teamscale_client/data.html#ServiceError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#teamscale_client.data.ServiceError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Teamscale service returned an error.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="constants.html"
+                        title="previous chapter">Useful Constants</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="utils.html"
+                        title="next chapter">Utils</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/data.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="utils.html" title="Utils"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="constants.html" title="Useful Constants"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Python Teamscale Client 0.1 alpha documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, CQSE GmbH.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>

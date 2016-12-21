@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>teamscale_client.data &#8212; Python Teamscale Client 0.1 alpha documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1 alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Python Teamscale Client 0.1 alpha documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for teamscale_client.data</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">unicode_literals</span>
+
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">teamscale_client.constants</span> <span class="k">import</span> <span class="n">Assessment</span><span class="p">,</span> <span class="n">MetricAggregation</span><span class="p">,</span> <span class="n">MetricValueType</span><span class="p">,</span> <span class="n">MetricProperties</span><span class="p">,</span> <span class="n">AssessmentMetricColors</span>
+<span class="kn">from</span> <span class="nn">teamscale_client.utils</span> <span class="k">import</span> <span class="n">auto_str</span>
+
+
+<span class="nd">@auto_str</span>
+<div class="viewcode-block" id="Finding"><a class="viewcode-back" href="../../data.html#teamscale_client.data.Finding">[docs]</a><span class="k">class</span> <span class="nc">Finding</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Representation of a finding in Teamscale.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        finding_type_id (str): The type id that this finding belongs to.</span>
+<span class="sd">        message (str): The main finding message</span>
+<span class="sd">        assesssment (constants.Assessment): The assessment this finding should have. Default is `YELLOW`. </span>
+<span class="sd">                                            This value is only important if in Teamscale the finding enablement </span>
+<span class="sd">                                            is set to auto, otherwise the setting from Teamscale will be used.</span>
+<span class="sd">        start_offset (int): Offset from the beginning of the file, where the finding area starts (zero-based, inclusive). Can be left blank, if the start/endline are given. (See also: :ref:`FAQ - Offsets &lt;faq-offsets&gt;`).</span>
+<span class="sd">        end_offset (int): Offset from the beginning of the file, where the finding area ends (zero-based, inclusive). Can be left blank, if the start/endline are given. (See also: :ref:`FAQ - Offsets &lt;faq-offsets&gt;`).</span>
+<span class="sd">        start_line (int): The finding&#39;s first line (one-based, inclusive). Can be left blank, if the offsets are given. </span>
+<span class="sd">        end_line (int): The finding&#39;s last line (one-based, inclusive). Can be left blank, if the offsets or start_line are given.</span>
+<span class="sd">        identifier (Optional[str]): Advanced usage! Path to special elements in Teamscale, e.g. Simulink model parts. If this is given, offsets and lines do not need to be filled.  </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">finding_type_id</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">assessment</span><span class="o">=</span><span class="n">Assessment</span><span class="o">.</span><span class="n">YELLOW</span><span class="p">,</span> <span class="n">start_offset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_offset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_line</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_line</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">identifier</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">findingTypeId</span> <span class="o">=</span> <span class="n">finding_type_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assessment</span> <span class="o">=</span> <span class="n">assessment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">startOffset</span> <span class="o">=</span> <span class="n">start_offset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endOffset</span> <span class="o">=</span> <span class="n">end_offset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">startLine</span> <span class="o">=</span> <span class="n">start_line</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endLine</span> <span class="o">=</span> <span class="n">end_line</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="n">identifier</span></div>
+
+<span class="nd">@auto_str</span>
+<div class="viewcode-block" id="FileFindings"><a class="viewcode-back" href="../../data.html#teamscale_client.data.FileFindings">[docs]</a><span class="k">class</span> <span class="nc">FileFindings</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Representation of a file and its findings.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        findings (List[:class:`Finding`]): A list containing all findings that are present in this file. </span>
+<span class="sd">        path (str): The path to the file in Teamscale.</span>
+<span class="sd">        content (Optional[str]): The content of the file (can be left empty).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">findings</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">findings</span> <span class="o">=</span> <span class="n">findings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">content</span></div>
+
+
+<span class="n">FindingDescription</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;FindingDescription&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;typeid&#39;</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">,</span> <span class="s1">&#39;enablement&#39;</span><span class="p">])</span>
+<span class="sd">&quot;&quot;&quot;Description of a finding type to be added at configuration time.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        typeid (str): The id used to reference the finding type.</span>
+<span class="sd">        description (str): The text to display that explains what this finding type is about (and ideally how to fix it). This text will be the same for each concrete instance of the finding.</span>
+<span class="sd">        enablement (constants.Enablement): Describes the default enablement setting for this finding type, used when it is added to the analysis profile.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="nd">@auto_str</span>
+<div class="viewcode-block" id="MetricDescription"><a class="viewcode-back" href="../../data.html#teamscale_client.data.MetricDescription">[docs]</a><span class="k">class</span> <span class="nc">MetricDescription</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Description of a metric type to be addded at configuration time.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        metric_id (str): The globally unique metric id.</span>
+<span class="sd">        display_name (str): The metric&#39;s name that is displayed in the UI.</span>
+<span class="sd">        description (str): A description explaining what this metric means.</span>
+<span class="sd">        group_id (str): the name of an analysis group under which the metric is placed (used to group the metrics in the analysis profile).</span>
+<span class="sd">        aggregation (constants.MetricAggregation): How this metric is supposed to be aggregated up the directory hierarchy. Defaults to ``SUM``.</span>
+<span class="sd">        value_type (constants.MetricValueType): Determines the metric&#39;s type. Defaults to ``NUMERIC``.</span>
+<span class="sd">        properties (set[constants.MetricProperties]): Determines the metric&#39;s properties. This has effects on how/if the metric is displayed and assessed. Defaults to ``(SIZE_METRIC, )``. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metric_id</span><span class="p">,</span> <span class="n">display_name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">group_id</span><span class="p">,</span> <span class="n">aggregation</span><span class="o">=</span><span class="n">MetricAggregation</span><span class="o">.</span><span class="n">SUM</span><span class="p">,</span> <span class="n">value_type</span><span class="o">=</span><span class="n">MetricValueType</span><span class="o">.</span><span class="n">NUMERIC</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="p">(</span><span class="n">MetricProperties</span><span class="o">.</span><span class="n">SIZE_METRIC</span><span class="p">,)):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metricId</span> <span class="o">=</span> <span class="n">metric_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analysisGroup</span> <span class="o">=</span> <span class="n">group_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metricDefinition</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">display_name</span><span class="p">,</span>
+            <span class="s2">&quot;aggregation&quot;</span> <span class="p">:</span> <span class="n">aggregation</span><span class="p">,</span>
+            <span class="s2">&quot;description&quot;</span> <span class="p">:</span> <span class="n">description</span><span class="p">,</span>
+            <span class="s2">&quot;properties&quot;</span> <span class="p">:</span> <span class="n">properties</span><span class="p">,</span>
+            <span class="s2">&quot;valueType&quot;</span> <span class="p">:</span> <span class="n">value_type</span>
+        <span class="p">}</span></div>
+
+<span class="nd">@auto_str</span>
+<div class="viewcode-block" id="MetricEntry"><a class="viewcode-back" href="../../data.html#teamscale_client.data.MetricEntry">[docs]</a><span class="k">class</span> <span class="nc">MetricEntry</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A container for adding metric values to a file.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        path (str): Path to a resource in Teamscale (usually a file). </span>
+<span class="sd">                    This can also point to architecture components using the following syntax: ``-architectures-/&lt;architecture-name&gt;/path/to/component/``</span>
+<span class="sd">        metrics (dict[str, object]): A dictionary mapping from metric_id to metric value. The value depends on the metric type: Numeric: ``double``, Timestamp: ``int - unix timestamp in milliseconds``, Assessment: ``[&lt;GREENVALUE&gt;,&lt;YELLOWVALUE&gt;,&lt;REDVALUE&gt;]``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">metrics</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="n">metrics</span></div>
+
+<span class="nd">@auto_str</span>
+<div class="viewcode-block" id="NonCodeMetricEntry"><a class="viewcode-back" href="../../data.html#teamscale_client.data.NonCodeMetricEntry">[docs]</a><span class="k">class</span> <span class="nc">NonCodeMetricEntry</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A container for adding non-code metrics to a project.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        path (str): Arbitrary path to which the non-code metrics shall be attached.</span>
+<span class="sd">        content (str): The content displayed as content for the path.</span>
+<span class="sd">        count (int): The count value.</span>
+<span class="sd">        assessment (dict[:class:`constants.AssessmentMetricColors`, int]): The assessment distribution for this path.</span>
+<span class="sd">        time (double): The time used to create this result (e.g. unit test run time, or build duration).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">assessment</span><span class="o">=</span><span class="p">{},</span> <span class="n">time</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">content</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="n">count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assessment</span> <span class="o">=</span> <span class="n">assessment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span></div>
+
+<span class="nd">@auto_str</span>
+<div class="viewcode-block" id="Baseline"><a class="viewcode-back" href="../../data.html#teamscale_client.data.Baseline">[docs]</a><span class="k">class</span> <span class="nc">Baseline</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Represents a Teamscale baseline. Either the date or the timestamp must be given</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (str): The baseline&#39;s name</span>
+<span class="sd">        description (str): The baseline&#39;s description</span>
+<span class="sd">        date (Optional[datetime.datetime]): The date for which the baseline is set</span>
+<span class="sd">        date (Optional[long]): The timestamp (in ms) for which the baseline is set</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">timestamp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Either date or timestamp must be given.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="n">timestamp</span>
+        <span class="k">if</span> <span class="n">date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_date</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Baseline</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hash</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">==</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_date</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_timestamp</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_set_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date_object</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">sys</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">3</span><span class="p">,):</span>
+            <span class="n">long_type</span> <span class="o">=</span> <span class="nb">int</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">long_type</span> <span class="o">=</span> <span class="n">long</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="n">long_type</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">mktime</span><span class="p">(</span><span class="n">date_object</span><span class="o">.</span><span class="n">timetuple</span><span class="p">())</span><span class="o">*</span><span class="mi">1000</span><span class="p">)</span>
+
+    <span class="n">date</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_date</span><span class="p">,</span> <span class="n">_set_date</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ServiceError"><a class="viewcode-back" href="../../data.html#teamscale_client.data.ServiceError">[docs]</a><span class="k">class</span> <span class="nc">ServiceError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Teamscale service returned an error.&quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Python Teamscale Client 0.1 alpha documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, CQSE GmbH.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>
